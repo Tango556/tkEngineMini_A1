@@ -33,7 +33,7 @@ struct SVSIn{
 	float4 pos 		: POSITION;		//モデルの頂点座標。
 	float3 normal	: NORMAL;
 	float2 uv 		: TEXCOORD0;	//UV座標。
-    float3 worldPos : TEXCOORD1;
+    //float3 worldPos : TEXCOORD1;
 	SSkinVSIn skinVert;				//スキン用のデータ。
 };
 //ピクセルシェーダーへの入力。

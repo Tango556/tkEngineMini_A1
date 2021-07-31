@@ -13,7 +13,7 @@ struct DirectionLight
 	/// <summary>
 	/// ディレクションセッター
 	/// </summary>
-	/// <param name="Dir"></param>
+	/// <param name="Dir">ライト方向</param>
 	void SetDirection(const Vector3 Dir)
 	{
 		ligDirection = Dir;
@@ -36,17 +36,29 @@ struct PointLight
 	float pad = 0.0f;
 	Vector3 PLigColor = Vector3::Zero;
 	float Range = 0.0f;
-
-	void SetPLigPos(Vector3 PLigPos, Vector3 PLigCol, float Ran)
+	/// <summary>
+	/// ライトポジションセッター
+	/// </summary>
+	/// <param name="PLigPos">ポイントライトの座標</param>
+	void SetPLigPos(Vector3 PLigPos)
 	{
 		PLigPosition = PLigPos;
-		PLigColor = PLigCol;
-		Range = Ran;
 	}
-
-	void SetPosition(Vector3 PLigPos)
+	/// <summary>
+	/// カラーセッター
+	/// </summary>
+	/// <param name="PLigCor">カラー</param>
+	void SetColor(Vector3 PLigCor)
 	{
-		PLigPosition = PLigPos;
+		PLigColor = PLigCor;
+	}
+	/// <summary>
+	/// 影響範囲セッター
+	/// </summary>
+	/// <param name="Ran">影響範囲の値</param>
+	void SetRange(float Ran)
+	{
+		Range = Ran;
 	}
 };
 

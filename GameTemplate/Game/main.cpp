@@ -36,16 +36,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//dirLig.eyePos = g_camera3D->GetPosition();
 
-	DirectionLight Lig;
+	DirectionLight DLig;
 
-	Lig.ligDirection.x = 0.0f;
-	Lig.ligDirection.y = 1.0f;
-	Lig.ligDirection.z = -1.0f;
-	Lig.ligDirection.Normalize();
+	DLig.ligDirection.x = 0.0f;
+	DLig.ligDirection.y = 1.0f;
+	DLig.ligDirection.z = -0.5f;
+	DLig.ligDirection.Normalize();
 
-	Lig.DirColor.x = 1.0f;
-	Lig.DirColor.y = 1.0f;
-	Lig.DirColor.z = 1.0f;
+	DLig.DirColor.x = 0.0f;
+	DLig.DirColor.y = 0.0f;
+	DLig.DirColor.z = 0.0f;
+
+	PointLight PLig;
+	PLig.SetColor({ 1.0f, 0.0f, 0.0f });
+	PLig.SetPLigPos({ 0.0f, 50.0f, 50.0f });
+	PLig.SetRange(100.0f);
+
+	Light Lig;
+	Lig.DLight = DLig;
+	Lig.PLight = PLig;
 
 	/*Lig.ptColor.x = 15.0f;
 	Lig.ptColor.y = 15.0f;
@@ -88,14 +97,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリング開始。
 		g_engine->BeginFrame();
 		
-		/*Lig.ptPosition.x -= g_pad[0]->GetLStickXF();
+		PLig.PLigPosition.x -= g_pad[0]->GetLStickXF();
 		if (g_pad[0]->IsPress(enButtonB)) {
-			Lig.ptPosition.y += g_pad[0]->GetLStickYF();
+			PLig.PLigPosition.y += g_pad[0]->GetLStickYF();
 		}
 		else {
-			Lig.ptPosition.z -= g_pad[0]->GetLStickYF();
-		}*/
+			PLig.PLigPosition.z -= g_pad[0]->GetLStickYF();
+		}
 
+		Lig.DLight = DLig;
+		Lig.PLight = PLig;
 		//////////////////////////////////////
 		//ここから絵を描くコードを記述する。
 		//////////////////////////////////////

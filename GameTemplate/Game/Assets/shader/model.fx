@@ -16,9 +16,13 @@ cbuffer ModelCb : register(b0){
 //ディレクションライト用定数バッファ
 cbuffer DirectionLightCb : register(b1)
 {
-	float3 ligDirection;
-	float3 ligColor;
+    float3 ligDirection;
+    float3 ligColor;
     float3 eyePos;
+	
+    float3 PLigPos;
+    float3 PLigColor;
+    float Range;
 };
 ////////////////////////////////////////////////
 // 構造体
@@ -33,7 +37,6 @@ struct SVSIn{
 	float4 pos 		: POSITION;		//モデルの頂点座標。
 	float3 normal	: NORMAL;
 	float2 uv 		: TEXCOORD0;	//UV座標。
-    //float3 worldPos : TEXCOORD1;
 	SSkinVSIn skinVert;				//スキン用のデータ。
 };
 //ピクセルシェーダーへの入力。
@@ -43,6 +46,11 @@ struct SPSIn{
 	float2 uv 			: TEXCOORD0;	//uv座標。
     float3 worldPos		: TEXCOORD1;
 };
+///////////////////////////////////////////
+// 関数宣言
+///////////////////////////////////////////
+float3 CalcLambertDiffuse(float3 lightDirection, float3 lightColor, float3 normal);
+float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldPos, float3 normal);
 
 ////////////////////////////////////////////////
 // グローバル変数。
@@ -93,7 +101,7 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
 	psIn.normal = mul(mWorld, vsIn.normal);
 	psIn.uv = vsIn.uv;
     psIn.worldPos = vsIn.pos;
-	
+
 	return psIn;
 }
 
@@ -146,7 +154,26 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
 	
     float3 specularLig = ligColor * t;
 	
-    float3 lig = diffuseLig + specularLig;
+    float3 ligDir = psIn.worldPos - PLigPos;
+    ligDir = normalize(ligDir);
+	
+    float3 diffPoint = CalcLambertDiffuse(ligDir, PLigColor, psIn.normal);
+    float3 specPoint = CalcPhongSpecular(ligDir, PLigColor, psIn.worldPos, psIn.normal);
+	
+    float3 distance = length(psIn.worldPos - PLigPos);
+	
+    float affect = 1.0f - 1.0f / Range * distance;	
+	//影響力がマイナスにならないように補正
+    if (affect < 0.0f)
+    {
+        affect = 0.0f;
+    }
+    affect = pow(affect, 3.0f);
+	
+    diffPoint *= affect;
+    specPoint *= affect;
+	
+    float3 lig = (diffuseLig + diffPoint) + (specularLig + specPoint);
 	
     float4 finalColor = g_albedo.Sample(g_sampler, psIn.uv);
 	
@@ -156,4 +183,38 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
 	
 	
 	return finalColor;
+}
+
+float3 CalcLambertDiffuse(float3 lightDirection, float3 lightColor, float3 normal)
+{
+    // ピクセルの法線とライトの方向の内積を計算する
+    float t = dot(normal, lightDirection) * -1.0f;
+
+    // 内積の値を0以上の値にする
+    t = max(0.0f, t);
+
+    // 拡散反射光を計算する
+    return lightColor * t;
+}
+
+float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldPos, float3 normal)
+{
+    // 反射ベクトルを求める
+    float3 refVec = reflect(lightDirection, normal);
+
+    // 光が当たったサーフェイスから視点に伸びるベクトルを求める
+    float3 toEye = eyePos - worldPos;
+    toEye = normalize(toEye);
+
+    // 鏡面反射の強さを求める
+    float t = dot(refVec, toEye);
+
+    // 鏡面反射の強さを0以上の数値にする
+    t = max(0.0f, t);
+
+    // 鏡面反射の強さを絞る
+    t = pow(t, 5.0f);
+
+    // 鏡面反射光を求める
+    return lightColor * t;
 }

@@ -38,23 +38,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	DirectionLight DLig;
 
-	DLig.ligDirection.x = 0.0f;
-	DLig.ligDirection.y = 1.0f;
-	DLig.ligDirection.z = -0.5f;
-	DLig.ligDirection.Normalize();
-
-	DLig.DirColor.x = 0.0f;
-	DLig.DirColor.y = 0.0f;
-	DLig.DirColor.z = 0.0f;
+	DLig.SetColor({ 0.0f,0.0f,0.0f });
+	DLig.SetDirection({ 0.0f,0.0f,0.0f });
 
 	PointLight PLig;
-	PLig.SetColor({ 1.0f, 0.0f, 0.0f });
+	PLig.SetColor({ 0.0f, 0.0f, 0.0f });
 	PLig.SetPLigPos({ 0.0f, 50.0f, 50.0f });
 	PLig.SetRange(100.0f);
+
+	SpotLight SLig;
+	SLig.SetSLigPos({ 0.0f, 0.0f, 300.0f });
+	SLig.SetSLigColor({ 10.0f, 10.0f, 10.0f });
+	SLig.SetSLigRan(1000.0f);
+	SLig.SetSLigDir({ 0.0f, 0.0f, -1.0f });
+	SLig.SetSLigAng(25.0f);
 
 	Light Lig;
 	Lig.DLight = DLig;
 	Lig.PLight = PLig;
+	Lig.SLight = SLig;
 
 	/*Lig.ptColor.x = 15.0f;
 	Lig.ptColor.y = 15.0f;
@@ -97,16 +99,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリング開始。
 		g_engine->BeginFrame();
 		
-		PLig.PLigPosition.x -= g_pad[0]->GetLStickXF();
+		SLig.SLigPosition.x -= g_pad[0]->GetLStickXF();
 		if (g_pad[0]->IsPress(enButtonB)) {
-			PLig.PLigPosition.y += g_pad[0]->GetLStickYF();
+			SLig.SLigPosition.y += g_pad[0]->GetLStickYF();
 		}
 		else {
-			PLig.PLigPosition.z -= g_pad[0]->GetLStickYF();
+			SLig.SLigPosition.z -= g_pad[0]->GetLStickYF();
 		}
 
 		Lig.DLight = DLig;
 		Lig.PLight = PLig;
+		Lig.SLight = SLig;
 		//////////////////////////////////////
 		//ここから絵を描くコードを記述する。
 		//////////////////////////////////////

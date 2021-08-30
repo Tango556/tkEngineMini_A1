@@ -62,17 +62,74 @@ struct PointLight
 	}
 };
 
+struct SpotLight
+{
+	Vector3 SLigPosition;	//位置
+	float pad0;				//パディング
+	Vector3 SLigColor;		//カラー
+	float SLigRange;		//影響範囲
+	Vector3 SLigDirection;	//射出方向
+	float SLigAngle;		//初出角度
+
+	/// <summary>
+	/// スポットライト位置セッター
+	/// </summary>
+	/// <param name="SLPos">位置座標</param>
+	void SetSLigPos(Vector3 SLPos)
+	{
+		SLigPosition = SLPos;
+	}
+
+	/// <summary>
+	/// スポットライトカラーセッター
+	/// </summary>
+	/// <param name="SLCol">ライトカラー</param>
+	void SetSLigColor(Vector3 SLCol)
+	{
+		SLigColor = SLCol;
+	}
+
+	/// <summary>
+	/// スポットライト影響範囲セッター
+	/// </summary>
+	/// <param name="SLRan">影響範囲指数</param>
+	void SetSLigRan(float SLRan)
+	{
+		SLigRange = SLRan;
+	}
+
+	/// <summary>
+	/// スポットライト射出方向セッター
+	/// </summary>
+	/// <param name="SLDir">射出方向</param>
+	void SetSLigDir(Vector3 SLDir)
+	{
+		SLigDirection = SLDir;
+		SLigDirection.Normalize();
+	}
+
+	/// <summary>
+	/// スポットライト射出角セッター
+	/// </summary>
+	/// <param name="SLAng">射出角</param>
+	void SetSLigAng(float SLAng)
+	{
+		SLigAngle = Math::DegToRad(SLAng);
+	}
+};
+
 struct Light
 {
 	DirectionLight DLight;
 	PointLight PLight;
+	SpotLight SLight;
 };
 
 class Lighting : public IGameObject
 {
 	DirectionLight DLig;
 	PointLight PLig;
-	//SpotLight SLig;	*予定*
+	SpotLight SLig;
 public:
 	
 };

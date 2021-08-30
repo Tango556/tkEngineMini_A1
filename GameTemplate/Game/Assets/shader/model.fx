@@ -20,9 +20,15 @@ cbuffer DirectionLightCb : register(b1)
     float3 ligColor;
     float3 eyePos;
 	
-    float3 PLigPos;
+    float3 PLigPosition;
     float3 PLigColor;
     float Range;
+	
+    float3 SLigPosition;
+    float3 SligColor;
+    float SLigRange;
+    float3 SLigDirection;
+    float SLigAngle;
 };
 ////////////////////////////////////////////////
 // 構造体
@@ -154,30 +160,78 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
 	
     float3 specularLig = ligColor * t;
 	
-    float3 ligDir = psIn.worldPos - PLigPos;
-    ligDir = normalize(ligDir);
+    float3 PligDir = psIn.worldPos - PLigPosition;
+    PligDir = normalize(PligDir);
 	
-    float3 diffPoint = CalcLambertDiffuse(ligDir, PLigColor, psIn.normal);
-    float3 specPoint = CalcPhongSpecular(ligDir, PLigColor, psIn.worldPos, psIn.normal);
+    float3 diffPoint = CalcLambertDiffuse(PligDir, PLigColor, psIn.normal);
+    float3 specPoint = CalcPhongSpecular(PligDir, PLigColor, psIn.worldPos, psIn.normal);
 	
-    float3 distance = length(psIn.worldPos - PLigPos);
+    float3 PLigDistance = length(psIn.worldPos - PLigPosition);
 	
-    float affect = 1.0f - 1.0f / Range * distance;	
+    float PligAffect = 1.0f - 1.0f / Range * PLigDistance;	
 	//影響力がマイナスにならないように補正
-    if (affect < 0.0f)
+    if (PligAffect < 0.0f)
     {
-        affect = 0.0f;
+        PligAffect = 0.0f;
     }
-    affect = pow(affect, 3.0f);
+    PligAffect = pow(PligAffect, 3.0f);
 	
-    diffPoint *= affect;
-    specPoint *= affect;
-	
-    float3 lig = (diffuseLig + diffPoint) + (specularLig + specPoint);
+    diffPoint *= PligAffect;
+    specPoint *= PligAffect;
+    
+    float3 SligDir = psIn.worldPos - SLigPosition;
+    SligDir = normalize(SligDir);
+    
+    float3 diffSpotLight = CalcLambertDiffuse(
+        SligDir,
+        SligColor,
+        psIn.normal
+    );
+    
+    float3 specSpotLight = CalcPhongSpecular(
+        SligDir,
+        SligColor,
+        psIn.worldPos,
+        psIn.normal
+    );
+    
+    //スポットライトとの距離を計算する
+    float3 SLigDistance = length(psIn.worldPos - SLigPosition);
+    
+    //影響率は距離に比例して小さくなる
+    float SLigAffect = 1.0f - 1.0f / SLigRange * SLigDistance;
+    //影響値がマイナスにならないように補正する
+    if (SLigAffect < 0.0f)
+    {
+        SLigAffect = 0.0f;
+    }
+    
+    SLigAffect = pow(SLigAffect, 3.0f);
+    
+    diffSpotLight *= SLigAffect;
+    specSpotLight *= SLigAffect;
+    
+    float angle = dot(SligDir, SLigDirection);
+    
+    angle = acos(angle);
+    
+    SLigAffect = 1.0f - (1.0f / SLigAngle * angle);
+    //影響力がマイナスにならないように補正かける
+    if (SLigAffect < 0.0f)
+    {
+        SLigAffect = 0.0f;
+    }
+    //影響の仕方を指数関数的にす
+    SLigAffect = pow(SLigAffect, 0.5f);
+    
+    diffSpotLight *= SLigAffect;
+    specSpotLight *= SLigAffect;
+    
+    float3 lig = (diffuseLig + diffPoint + diffSpotLight) + (specularLig + specPoint + specSpotLight);
 	
     float4 finalColor = g_albedo.Sample(g_sampler, psIn.uv);
 	
-    float3 ambientLig = { 0.3f, 0.3f, 0.3f };
+    float3 ambientLig = { 0.1f, 0.1f, 0.1f };
 
 	finalColor.xyz *= lig + ambientLig;
 	

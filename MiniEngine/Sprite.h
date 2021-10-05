@@ -28,7 +28,7 @@ struct SpriteInitData {
 	const char* m_ddsFilePath[MAX_TEXTURE]= {nullptr};		//DDSファイルのファイルパス。
 	Texture* m_textures[MAX_TEXTURE] = { nullptr };			//使用するテクスチャ。DDSファイルのパスが指定されている場合は、このパラメータは無視されます。
 	const char* m_vsEntryPointFunc = "VSMain";				//頂点シェーダーのエントリーポイント。
-	const char* m_psEntryPoinFunc = "PSMain";				//ピクセルシェーダーのエントリーポイント。
+	const char* m_psEntryPointFunc = "PSMain";				//ピクセルシェーダーのエントリーポイント。
 	const char* m_fxFilePath = nullptr;						//.fxファイルのファイルパス。
 	UINT m_width = 0;										//スプライトの幅。
 	UINT m_height = 0;										//スプライトの高さ。
@@ -36,6 +36,16 @@ struct SpriteInitData {
 	int m_expandConstantBufferSize = 0;						//ユーザー拡張の定数バッファのサイズ。
 	IShaderResource* m_expandShaderResoruceView = nullptr;	//ユーザー拡張のシェーダーリソース。
 	AlphaBlendMode m_alphaBlendMode = AlphaBlendMode_None;	//アルファブレンディングモード。
+	std::array<DXGI_FORMAT, MAX_RENDERING_TARGET> m_colorBufferFormat = {
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+		DXGI_FORMAT_UNKNOWN,
+	}; //レンダリングするカラーバッファのフォーマット。
 };
 /// <summary>
 /// スプライトクラス。

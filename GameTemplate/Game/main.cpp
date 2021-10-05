@@ -44,7 +44,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	
 	Vector3 DLigDir = { 0.0f, -1.0f, -1.0f };
 
-	DLig.SetColor({0.8f, 0.8f, 0.8f});
+	DLig.SetColor({1.0f, 1.0f, 0.6f});
 	DLig.SetDirection(DLigDir);
 	
 	PointLight PLig;
@@ -61,7 +61,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	SLig.SetSLigAng(10.0f);*/
 
 	AmbientLight ALig;
-	ALig.Light = 0.1f;
+	ALig.Light = 0.5f;
 
 	Light Lig;
 	//Lig.DLight = DLig;
@@ -72,7 +72,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	/*Lig.ptColor.x = 15.0f;
 	Lig.ptColor.y = 15.0f;
 	Lig.ptColor.z = 15.0f;
-
 	Lig.ptPosition.x = 0.0f;
 	Lig.ptPosition.y = 50.0f;
 	Lig.ptPosition.z = 50.0f;
@@ -142,21 +141,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	luminanceSprite.Init(luminanceSpriteInitData);
 
 	//ガウシアンブラーを初期化
-	GaussianBlur gaussianBlur[4];
+	GaussianBlur toBloomGaussianBlur[4];
 	//gaussianBlur[0]は輝度テクスチャにガウシアンブラーをかける。
-	gaussianBlur[0].Init(&luminanceRenderTarget.GetRenderTargetTexture());
+	toBloomGaussianBlur[0].Init(&luminanceRenderTarget.GetRenderTargetTexture());
 	//gaussianBlur[1]はgaussianBlur[1]にテクスチャにガウシアンブラーをかける
-	gaussianBlur[1].Init(&gaussianBlur[0].GetBlurredTexture());
-	gaussianBlur[2].Init(&gaussianBlur[1].GetBlurredTexture());
-	gaussianBlur[3].Init(&gaussianBlur[2].GetBlurredTexture());
+	toBloomGaussianBlur[1].Init(&toBloomGaussianBlur[0].GetBlurredTexture());
+	toBloomGaussianBlur[2].Init(&toBloomGaussianBlur[1].GetBlurredTexture());
+	toBloomGaussianBlur[3].Init(&toBloomGaussianBlur[2].GetBlurredTexture());
 
 	//ボケ画像を合成して描き込むためのスプライトを初期化
 	//初期化情報を設定す
 	SpriteInitData finalSpriteInitData;
-	finalSpriteInitData.m_textures[0] = &gaussianBlur[0].GetBlurredTexture();
-	finalSpriteInitData.m_textures[1] = &gaussianBlur[1].GetBlurredTexture();
-	finalSpriteInitData.m_textures[2] = &gaussianBlur[2].GetBlurredTexture();
-	finalSpriteInitData.m_textures[3] = &gaussianBlur[3].GetBlurredTexture();
+	finalSpriteInitData.m_textures[0] = &toBloomGaussianBlur[0].GetBlurredTexture();
+	finalSpriteInitData.m_textures[1] = &toBloomGaussianBlur[1].GetBlurredTexture();
+	finalSpriteInitData.m_textures[2] = &toBloomGaussianBlur[2].GetBlurredTexture();
+	finalSpriteInitData.m_textures[3] = &toBloomGaussianBlur[3].GetBlurredTexture();
 
 	//解像度はmainRenderTargetの幅と高さ
 	finalSpriteInitData.m_width = 1280;
@@ -254,10 +253,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリングターゲットへの書き込み終了待ち
 		renderContext.WaitUntilFinishDrawingToRenderTarget(luminanceRenderTarget);
 		//ガウシアンブラーを4回実行する
-		gaussianBlur[0].ExevuteOnGPU(renderContext, 10);
-		gaussianBlur[1].ExevuteOnGPU(renderContext, 10);
-		gaussianBlur[2].ExevuteOnGPU(renderContext, 10);
-		gaussianBlur[3].ExevuteOnGPU(renderContext, 10);
+		toBloomGaussianBlur[0].ExevuteOnGPU(renderContext, 10);
+		toBloomGaussianBlur[1].ExevuteOnGPU(renderContext, 10);
+		toBloomGaussianBlur[2].ExevuteOnGPU(renderContext, 10);
+		toBloomGaussianBlur[3].ExevuteOnGPU(renderContext, 10);
 
 		//ボケ画像を合成してレンダリングターゲットに加算合成
 		//レンダリングターゲットとして利用できるまで待つ

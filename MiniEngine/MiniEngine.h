@@ -29,6 +29,11 @@
 #include "DirectXTK/Inc/SpriteFont.h"
 
 #include "d3dx12.h"
+
+const int MAX_RENDERING_TARGET = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;
+
+using namespace Microsoft::WRL;
+
 #include "dbg/MyAssert.h"
 
 #include "time/GameTime.h"

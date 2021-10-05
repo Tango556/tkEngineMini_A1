@@ -133,6 +133,7 @@ struct Light
 
 class Lighting : public IGameObject
 {
+private:
 	DirectionLight DLig;
 	PointLight PLig;
 	SpotLight SLig;

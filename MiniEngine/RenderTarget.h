@@ -61,6 +61,7 @@ public:
 	{
 		return m_depthStencilTexture;
 	}
+	~RenderTarget();
 	/// <summary>
 	/// レンダリングターゲットの幅を取得。
 	/// </summary>
@@ -84,6 +85,14 @@ public:
 	float GetDSVClearValue() const
 	{
 		return m_dsvClearValue;
+	}
+	/// <summary>
+	/// カラーバッファのフォーマットを取得
+	/// </summary>
+	/// <returns>カラーバッファフォーマット</returns>
+	DXGI_FORMAT GetColorBufferFormat() const
+	{
+		return m_renderTargetTexture.GetFormat();
 	}
 private:
 	/// <summary>

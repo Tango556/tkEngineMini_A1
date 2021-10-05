@@ -29,6 +29,8 @@ cbuffer DirectionLightCb : register(b1)
     float SLigRange;
     float3 SLigDirection;
     float SLigAngle;
+    
+    float AmbientLight;
 };
 ////////////////////////////////////////////////
 // 構造体
@@ -231,7 +233,7 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
 	
     float4 finalColor = g_albedo.Sample(g_sampler, psIn.uv);
 	
-    float3 ambientLig = { 0.1f, 0.1f, 0.1f };
+    float3 ambientLig = { AmbientLight, AmbientLight, AmbientLight };
 
 	finalColor.xyz *= lig + ambientLig;
 	

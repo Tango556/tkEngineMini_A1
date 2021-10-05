@@ -118,11 +118,17 @@ struct SpotLight
 	}
 };
 
+struct AmbientLight {
+	float Light;
+	Vector3 VPad;
+};
+
 struct Light
 {
 	DirectionLight DLight;
 	PointLight PLight;
 	SpotLight SLight;
+	AmbientLight ALight;
 };
 
 class Lighting : public IGameObject
@@ -130,6 +136,7 @@ class Lighting : public IGameObject
 	DirectionLight DLig;
 	PointLight PLig;
 	SpotLight SLig;
+	AmbientLight Alig;
 public:
 	
 };

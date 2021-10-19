@@ -2,14 +2,19 @@
 #include "stdafx.h"
 #include <math.h>
 
+Camera SunPerspective;
+
+
 struct DirectionLight
 {
+private:
 	Vector3 ligDirection = Vector3::Zero;
 	float pad0 = 0.0f;
 	Vector3 DirColor = Vector3::Zero;
 	float pad1 = 0.0f;
 	Vector3 eyePos = Vector3::Zero;
 	float pad2 = 0.0f;
+public:
 	/// <summary>
 	/// ディレクションセッター
 	/// </summary>
@@ -19,7 +24,6 @@ struct DirectionLight
 		ligDirection = Dir;
 		ligDirection.Normalize();
 	}
-
 	/// <summary>
 	/// カラーセッター
 	/// </summary>
@@ -28,14 +32,21 @@ struct DirectionLight
 	{
 		DirColor = Cor;
 	}
+
+	void SetEyePos()
+	{
+		eyePos = g_camera3D->GetPosition();
+	}
 };
 
 struct PointLight
 {
+private:
 	Vector3 PLigPosition = Vector3::Zero;
 	float pad = 0.0f;
 	Vector3 PLigColor = Vector3::Zero;
 	float Range = 0.0f;
+public:
 	/// <summary>
 	/// ライトポジションセッター
 	/// </summary>
@@ -60,17 +71,24 @@ struct PointLight
 	{
 		Range = Ran;
 	}
+
+	Vector3 GetPLigPos()
+	{
+		return PLigPosition;
+	}
 };
+
 
 struct SpotLight
 {
+private:
 	Vector3 SLigPosition;	//位置
 	float pad0;				//パディング
 	Vector3 SLigColor;		//カラー
 	float SLigRange;		//影響範囲
 	Vector3 SLigDirection;	//射出方向
 	float SLigAngle;		//初出角度
-
+public:
 	/// <summary>
 	/// スポットライト位置セッター
 	/// </summary>
@@ -116,11 +134,44 @@ struct SpotLight
 	{
 		SLigAngle = Math::DegToRad(SLAng);
 	}
+
+	Vector3 GetSLigPos()
+	{
+		return SLigPosition;
+	}
 };
 
 struct AmbientLight {
-	float Light;
-	Vector3 VPad;
+private:
+	Vector3 LightColor;
+	float Pad1;
+public:
+	/// <summary>
+	/// 環境光セッター
+	/// </summary>
+	/// <param name="lig">環境光カラー</param>
+	void SetAmbientLight(Vector3 lig)
+	{
+		LightColor = lig;
+	}
+	/// <summary>
+	/// 環境光セッター
+	/// </summary>
+	/// <param name="lig">環境光強度</param>
+	void SetAmbientLight(float lig)
+	{
+		LightColor = { lig, lig, lig };
+	}
+};
+
+struct LightView {
+private:
+	Matrix rightProjectionView;
+public:
+	void SetCamera(Camera cam)
+	{
+		rightProjectionView = cam.GetViewProjectionMatrix();
+	}
 };
 
 struct Light
@@ -129,14 +180,15 @@ struct Light
 	PointLight PLight;
 	SpotLight SLight;
 	AmbientLight ALight;
+	LightView LV;
 };
 
-class Lighting : public IGameObject
+class Lighting
 {
 private:
-	DirectionLight DLig;
-	PointLight PLig;
-	SpotLight SLig;
+	DirectionLight DLig[10];
+	PointLight PLig[50];
+	SpotLight SLig[50];
 	AmbientLight Alig;
 public:
 	

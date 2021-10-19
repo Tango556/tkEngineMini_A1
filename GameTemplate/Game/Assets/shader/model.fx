@@ -118,7 +118,18 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
 /// </summary>
 SPSIn VSMain(SVSIn vsIn)
 {
-	return VSMainCore(vsIn, false);
+    SPSIn psIn;
+    
+    psIn.pos = mul(mWorld, vsIn.pos);
+    psIn.worldPos = psIn.pos;
+    psIn.pos = mul(mView, psIn.pos);
+    psIn.pos = mul(mProj, psIn.pos);
+    
+    //頂点法線をピクセルシェーダーに渡す
+    psIn.normal = mul(mWorld, vsIn.normal);
+    psIn.uv = vsIn.uv;
+    
+    return psIn;
 }
 /// <summary>
 /// スキンありメッシュの頂点シェーダーのエントリー関数。

@@ -15,7 +15,7 @@ public:
 	/// </summary>
 	/// <param name="renCon">レンダリングターゲット</param>
 	/// <param name="blurPower">ブラー強度。値が大きいほど強くなる</param>
-	void ExevuteOnGPU(RenderContext& renCon, float blurPower);
+	void ExecuteOnGPU(RenderContext& renCon, float blurPower);
 	/// <summary>
 	/// ぼかしたテクスチャを取得
 	/// </summary>

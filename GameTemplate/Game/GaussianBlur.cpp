@@ -13,7 +13,7 @@ void GaussianBlur::Init(Texture* originalTexture)
 }
 
 
-void GaussianBlur::ExevuteOnGPU(RenderContext& renCon, float blurPower)
+void GaussianBlur::ExecuteOnGPU(RenderContext& renCon, float blurPower)
 {
 	//重みテーブルを更新する
 	UpdateWeightTable(blurPower);

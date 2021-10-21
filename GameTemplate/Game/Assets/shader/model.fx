@@ -31,6 +31,8 @@ cbuffer DirectionLightCb : register(b1)
     float SLigAngle;
     
     float AmbientLight;
+    
+    float4x4 mLVP;
 };
 ////////////////////////////////////////////////
 // 構造体
@@ -53,6 +55,7 @@ struct SPSIn{
 	float3 normal		: NORMAL;
 	float2 uv 			: TEXCOORD0;	//uv座標。
     float3 worldPos		: TEXCOORD1;
+    float4 posInLVP     : TEXCOORD3;    //ライトビュースクリーン空間でのピクセル座標
 };
 ///////////////////////////////////////////
 // 関数宣言
@@ -65,6 +68,7 @@ float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldP
 ////////////////////////////////////////////////
 Texture2D<float4> g_albedo : register(t0);				//アルベドマップ
 StructuredBuffer<float4x4> g_boneMatrix : register(t3);	//ボーン行列。
+Texture2D<float4> g_shadowMap : register(t10);
 sampler g_sampler : register(s0);	//サンプラステート。
 
 ////////////////////////////////////////////////
@@ -129,6 +133,8 @@ SPSIn VSMain(SVSIn vsIn)
     psIn.normal = mul(mWorld, vsIn.normal);
     psIn.uv = vsIn.uv;
     
+    psIn.posInLVP = mul(mLVP, mul(mWorld, vsIn.pos));
+    
     return psIn;
 }
 /// <summary>
@@ -143,7 +149,7 @@ SPSIn VSSkinMain( SVSIn vsIn )
 /// </summary>
 float4 PSMain( SPSIn psIn ) : SV_Target0
 {
-	//float4 albedoColor = g_albedo.Sample(g_sampler, psIn.uv);
+   	//float4 albedoColor = g_albedo.Sample(g_sampler, psIn.uv);
 	//return albedoColor;
 	float t = dot(psIn.normal, ligDirection);
 	
@@ -248,8 +254,32 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
 
 	finalColor.xyz *= lig + ambientLig;
 	
+    float2 shadowMapUV = psIn.posInLVP.xy / psIn.posInLVP.w;
+    shadowMapUV *= float2(0.5f, -0.5f);
+    shadowMapUV += 0.5;
+    
+    float zInLVP = psIn.posInLVP.z / psIn.posInLVP.w;
+    
+    //g_shadowMap = float4(psIn.pos.z, psIn.pos.z, psIn.pos.z, 1.0f);
+    
+    if (shadowMapUV.x > 0.0f && shadowMapUV.x < 1.0f
+        && shadowMapUV.y > 0.0f && shadowMapUV.y < 1.0f)
+    {
+        float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV).r;
+        if (zInLVP > zInShadowMap)
+        {
+            finalColor.xyz *= 0.5f;
+        }
+    }
 	
-	return finalColor;
+        return finalColor;
+}
+
+float4 EZModelSH(SPSIn psIn) : SV_Target1
+{
+    float4 color = g_albedo.Sample(g_sampler, psIn.uv);
+    
+    return color;
 }
 
 float3 CalcLambertDiffuse(float3 lightDirection, float3 lightColor, float3 normal)

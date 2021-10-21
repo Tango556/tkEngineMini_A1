@@ -20,7 +20,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	GameObjectManager::CreateInstance();
 	PhysicsWorld::CreateInstance();
 
-	//g_camera3D->SetPosition(0.0f, 300.0f, 10.0f);
+	//g_camera3D->SetPosition(0.0f, 300.0f, 20.0f);
 
 	//DirectionLight dirLig;
 	//dirLig.SetDirection({ 1.0f, -1.0f, -1.0f });
@@ -41,14 +41,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		DXGI_FORMAT_D32_FLOAT
 	);
 	//g_camera3D->SetPosition(0.0f, 10000.0f, 0.0001f);
-	//g_camera3D->SetFar(100000.0f);
+	g_camera3D->SetFar(100000.0f);
 
 	DirectionLight DLig;
 	
 	Vector3 DLigDir = { 0.0f, -1.0f, -0.5f };
 
-	/*DLig.SetColor({ 1.4f, 1.4f, 1.4f });
-	DLig.SetDirection(DLigDir);*/
+	DLig.SetColor({ 1.6f, 1.6f, 1.6f });
+	DLig.SetDirection(DLigDir);
 	
 	PointLight PLig;
 	
@@ -57,21 +57,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	PLig.SetRange(30.0f);*/
 
 	SpotLight SLig;
-	SLig.SetSLigColor({ 20.0f, 15.0f, 10.0f });
+	/*SLig.SetSLigColor({ 15.0f,15.0f,15.0f });
 	SLig.SetSLigPos({ 0.0f, 300.0f, 0.0f });
 	SLig.SetSLigAng(30.0f);
 	SLig.SetSLigRan(1000.0f);
-	SLig.SetSLigDir({ 0.0f, -1.0f, 0.0f });
+	SLig.SetSLigDir({ 0.0f, -1.0f, 0.0f });*/
 
 
 	AmbientLight ALig;
 	ALig.SetAmbientLight(0.15f);
 
-	Light Lig;
-	Lig.DLight = DLig;
-	Lig.PLight = PLig;
-	Lig.SLight = SLig;
-	Lig.ALight = ALig;
+	
 
 	/*Lig.ptColor.x = 15.0f;
 	Lig.ptColor.y = 15.0f;
@@ -84,53 +80,81 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	Vector3 SunPosition = DLigDir;
 	SunPosition.Normalize();
-	SunPosition.Scale(1000.0f);
+	SunPosition.Scale(6000.0f);
 
 	Camera SunPerspective;
-	//SunPerspective.enUpdateProjMatrixFunc_Ortho;
-	SunPerspective.SetPosition(SunPosition);
+	SunPerspective.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+	SunPerspective.SetPosition(SunPosition * -1.0f);
 	SunPerspective.SetFar(10000.0f);
 	SunPerspective.SetTarget({ 0.0f,0.0f,0.0f });
-	SunPerspective.SetUp({ 1.0f,0.0f,0.0f });
+	SunPerspective.SetUp({ 0.0f,1.0f,0.0f });
+	SunPerspective.SetWidth(1024);
+	SunPerspective.SetHeight(1024);
 	SunPerspective.Update();
 
+	//g_camera3D = &SunPerspective;
+	//Camera MAUEView;	//真上視点
+	//MAUEView.SetPosition(0.0f, 2000.0, 0.01f);
+	//MAUEView.SetTarget(0.0f, 0.0f, 0.0f);
+	//MAUEView.SetFar(10000.0f);
+	//MAUEView.Update();
 
-	RenderTarget SHM; //シャドウマップレンダーターゲット
+	//g_camera3D = &MAUEView;
+
+	Light Lig;
+	Lig.DLight = DLig;
+	Lig.PLight = PLig;
+	Lig.SLight = SLig;
+	Lig.ALight = ALig;
+	Lig.LV.SetPrjMatrix(SunPerspective.GetViewProjectionMatrix());
+
+
+	RenderTarget shadowMapRT; //シャドウマップレンダーターゲット
 	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	SHM.Create(
-		1024,
-		1024,
+	shadowMapRT.Create(
+		2048,
+		2048,
 		1,
 		1,
-		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
 		DXGI_FORMAT_D32_FLOAT,
 		clearColor
 	);
 
 	Model Uni;
+	Model UniSha;
 	Model BackGround;
 
 	ModelInitData uni;
 	uni.m_tkmFilePath = "Assets/modelData/unityChan.tkm";
 	uni.m_fxFilePath = "Assets/shader/model.fx";
-
+	//uni.m_expandShaderResoruceView = &shadowMapRT.GetRenderTargetTexture();
 	uni.m_expandConstantBuffer = &Lig;
 	uni.m_expandConstantBufferSize = sizeof(Lig);
-	uni.m_collorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
+	uni.m_collorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
-	//uni.m_expandShaderResoruceView[0] = &SunPerspective.
+	ModelInitData uniSha;
+	uniSha.m_tkmFilePath = "Assets/modelData/unityChan.tkm";
+	uniSha.m_fxFilePath = "Assets/shader/SampleDepthShadow.fx";
+	uniSha.m_psEntryPointFunc = "PSMain";
+
+	//uniSha.m_expandConstantBuffer = &Lig;
+	//uniSha.m_expandConstantBufferSize = sizeof(Lig);
+
+	uniSha.m_collorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
 
 	ModelInitData BG;
 	BG.m_tkmFilePath = "Assets/modelData/bg/bg.tkm";
 	BG.m_fxFilePath = "Assets/shader/model.fx";
+	BG.m_expandShaderResoruceView = &shadowMapRT.GetRenderTargetTexture();
 
 	BG.m_expandConstantBuffer = &Lig;
 	BG.m_expandConstantBufferSize = sizeof(Lig);
 	BG.m_collorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
 	Uni.Init(uni);
+	UniSha.Init(uniSha);
 	BackGround.Init(BG);
-	Quaternion DirRota;
 	/*
 	//輝度抽出用レンダリングターゲットを作成
 	RenderTarget luminanceRenderTarget;
@@ -228,6 +252,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	kBloom.Init(mainRenderTarget);
 
 	Vector3 SligPos = SLig.GetSLigPos();
+
+
 	//////////////////////////////////////
 	// 初期化を行うコードを書くのはここまで！！！
 	//////////////////////////////////////
@@ -254,7 +280,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			SLig.SetSLigPos({ SLig.GetSLigPos().x, SLig.GetSLigPos().y + g_pad[0]->GetLStickYF(),SLig.GetSLigPos().z });
 		}
 
-		float DirAng = 0.02f;
 
 		//DirRota.SetRotation(Vector3::AxisX, DirAng);
 		//DirRota.Apply(DLigDir);
@@ -268,6 +293,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		Lig.PLight = PLig;
 		Lig.SLight = SLig;
 
+		renderContext.WaitUntilToPossibleSetRenderTarget(shadowMapRT);
+		renderContext.SetRenderTargetAndViewport(shadowMapRT);
+		renderContext.ClearRenderTargetView(shadowMapRT);
+		UniSha.Draw(renderContext, SunPerspective);
+		renderContext.WaitUntilFinishDrawingToRenderTarget(shadowMapRT);
+
+
 		//レンダリングターゲットをmainRenderTargetに変更する
 		//レンダリングターゲットとして利用できるまで待つ
 		renderContext.WaitUntilToPossibleSetRenderTarget(mainRenderTarget);
@@ -276,11 +308,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリングターゲットをクリア
 		renderContext.ClearRenderTargetView(mainRenderTarget);
 
-		//モデル描画
 		Uni.Draw(renderContext);
 		BackGround.Draw(renderContext);
 
 		renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
+		//renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
+
+		//モデル描画
+		
+
 		/*
 		//輝度抽出
 		//輝度抽出用のレンダリングターゲットに変更
@@ -308,7 +344,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		finalSprite.Draw(renderContext);
 		*/
 		//レンダリングターゲットへの書き込み終了待ち
-		renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
+		//renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 		
 
 		kBloom.Updete(mainRenderTarget, renderContext);
@@ -317,10 +353,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
 			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
 		);
-		copyToFrameBufferSprite.Draw(renderContext);
 
-		GameObjectManager::GetInstance()->ExecuteUpdate();
-		GameObjectManager::GetInstance()->ExecuteRender(renderContext);
+		
+
+		
+		copyToFrameBufferSprite.Draw(renderContext);
+		
+
+		//GameObjectManager::GetInstance()->ExecuteUpdate();
+		//GameObjectManager::GetInstance()->ExecuteRender(renderContext);
 		
 		
 		//////////////////////////////////////

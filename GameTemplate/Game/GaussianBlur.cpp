@@ -58,7 +58,7 @@ void GaussianBlur::InitRenderTargets()
 	//Yブラー用のレンダリングターゲットを作成する
 	m_yBlurRenderTarget.Create(
 		m_originalTexture->GetWidth() / 2,
-		m_originalTexture->GetHeight() /  2,
+		m_originalTexture->GetHeight() / 2,
 		1,
 		1,
 		m_originalTexture->GetFormat(),

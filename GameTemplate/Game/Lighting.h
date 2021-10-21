@@ -168,9 +168,9 @@ struct LightView {
 private:
 	Matrix rightProjectionView;
 public:
-	void SetCamera(Camera cam)
+	void SetPrjMatrix(const Matrix& cam)
 	{
-		rightProjectionView = cam.GetViewProjectionMatrix();
+		rightProjectionView = cam;
 	}
 };
 

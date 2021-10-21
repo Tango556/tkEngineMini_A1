@@ -6,7 +6,7 @@ private:
 	/// @brief 輝度抽出用RenderTarget
 	RenderTarget luminanceRenderTarget;
 	/// @brief 加算合成対象 : isAObject
-	RenderTarget bloomTarget;
+	RenderTarget RT;
 	/// @brief 輝度抽出用のスプライト
 	Sprite luminanceSprite;
 	/// @brief 加算合成主体 : isASubject

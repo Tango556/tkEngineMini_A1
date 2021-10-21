@@ -67,6 +67,10 @@ public:
 	/// ワールド行列を取得。
 	/// </summary>
 	/// <returns></returns>
+	void Draw(RenderContext& renderContext, Camera camera);
+
+	void Draw(RenderContext& RC, const Matrix& camViewMatrix, const Matrix& camProjMatrix);
+
 	const Matrix& GetWorldMatrix() const
 	{
 		return m_world;

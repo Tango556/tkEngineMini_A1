@@ -3,8 +3,6 @@
 
 void KTypeBloom::Init(RenderTarget& RT)
 {
-	bloomTarget = RT;
-
 	luminanceRenderTarget.Create(
 		1280,
 		720,
@@ -29,7 +27,7 @@ void KTypeBloom::Init(RenderTarget& RT)
 	luminanceSpriteInitData.m_height = 720;
 
 	//テクスチャはBlurTargetのカラーバッファ
-	luminanceSpriteInitData.m_textures[0] = &bloomTarget.GetRenderTargetTexture();
+	luminanceSpriteInitData.m_textures[0] = &RT.GetRenderTargetTexture();
 
 	//描き込むレンダリングターゲットのフォーマットを指定する
 	luminanceSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -94,5 +92,5 @@ void KTypeBloom::Updete(RenderTarget& RT, RenderContext& RC)
 	//最終合成
 	finalSprite.Draw(RC);
 	//レンダリングターゲットへの書き込み終了待ち
-	//RC.WaitUntilFinishDrawingToRenderTarget(RT);
+	RC.WaitUntilFinishDrawingToRenderTarget(RT);
 }

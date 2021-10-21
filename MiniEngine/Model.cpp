@@ -80,3 +80,18 @@ void Model::Draw(RenderContext& rc)
 		g_camera3D->GetProjectionMatrix()
 	);
 }
+
+void Model::Draw(RenderContext& renderContext, Camera camera)
+{
+	Draw(renderContext, camera.GetViewMatrix(), camera.GetProjectionMatrix());
+}
+
+void Model::Draw(RenderContext& RC, const Matrix& camViewMatrix, const Matrix& camProjMatrix)
+{
+	m_meshParts.Draw(
+		RC,
+		m_world,
+		camViewMatrix,
+		camProjMatrix
+	);
+}

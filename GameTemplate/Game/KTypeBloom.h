@@ -24,6 +24,6 @@ public:
 	/// </summary>
 	/// <param name="RT">レンダーターゲット</param>
 	/// <param name="RC">レンダーコンテキスト</param>
-	void Updete(RenderTarget& RT, RenderContext& RC);
+	void Updete(RenderTarget& RT/*, RenderContext& RC*/);
 };
 

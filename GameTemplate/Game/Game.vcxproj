@@ -289,6 +289,7 @@
     <ClCompile Include="..\..\MiniEngine\tkFile\TkmFile.cpp" />
     <ClCompile Include="..\..\MiniEngine\tkFile\TksFile.cpp" />
     <ClCompile Include="..\..\MiniEngine\VertexBuffer.cpp" />
+    <ClCompile Include="DepthShadow.cpp" />
     <ClCompile Include="GaussianBlur.cpp" />
     <ClCompile Include="KTypeBloom.cpp" />
     <ClCompile Include="Lighting.cpp" />
@@ -364,6 +365,7 @@
     <ClInclude Include="..\..\MiniEngine\tkFile\TkmFile.h" />
     <ClInclude Include="..\..\MiniEngine\tkFile\TksFile.h" />
     <ClInclude Include="..\..\MiniEngine\VertexBuffer.h" />
+    <ClInclude Include="DepthShadow.h" />
     <ClInclude Include="GaussianBlur.h" />
     <ClInclude Include="KTypeBloom.h" />
     <ClInclude Include="Lighting.h" />

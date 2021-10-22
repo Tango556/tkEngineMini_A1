@@ -65,32 +65,33 @@ void KTypeBloom::Init(RenderTarget& RT)
 	finalSprite.Init(finalSpriteInitData);
 }
 
-void KTypeBloom::Updete(RenderTarget& RT, RenderContext& RC)
+void KTypeBloom::Updete(RenderTarget& RT/*, RenderContext& RC*/)
 {
+	auto renderContext = g_graphicsEngine->GetRenderContext();
 	//輝度抽出
 	//輝度抽出用のレンダリングターゲットに変更
-	RC.WaitUntilToPossibleSetRenderTarget(luminanceRenderTarget);
+	renderContext.WaitUntilToPossibleSetRenderTarget(luminanceRenderTarget);
 	//レンダリングターゲットに設定
-	RC.SetRenderTargetAndViewport(luminanceRenderTarget);
+	renderContext.SetRenderTargetAndViewport(luminanceRenderTarget);
 	//レンダリングターゲットをクリア
-	RC.ClearRenderTargetView(luminanceRenderTarget);
+	renderContext.ClearRenderTargetView(luminanceRenderTarget);
 	//輝度抽出を行う
-	luminanceSprite.Draw(RC);
+	luminanceSprite.Draw(renderContext);
 	//レンダリングターゲットへの書き込み終了待つ
-	RC.WaitUntilFinishDrawingToRenderTarget(luminanceRenderTarget);
+	renderContext.WaitUntilFinishDrawingToRenderTarget(luminanceRenderTarget);
 	//ガウシアンブラーを4回実行する
-	toBloomGaussianBlur[0].ExecuteOnGPU(RC, 10);
-	toBloomGaussianBlur[1].ExecuteOnGPU(RC, 10);
-	toBloomGaussianBlur[2].ExecuteOnGPU(RC, 10);
-	toBloomGaussianBlur[3].ExecuteOnGPU(RC, 10);
+	toBloomGaussianBlur[0].ExecuteOnGPU(renderContext, 10);
+	toBloomGaussianBlur[1].ExecuteOnGPU(renderContext, 10);
+	toBloomGaussianBlur[2].ExecuteOnGPU(renderContext, 10);
+	toBloomGaussianBlur[3].ExecuteOnGPU(renderContext, 10);
 
 	//ブラード画像を合成しレンダリングターゲットに加算合成
 	//レンダリングターゲットへの書き込み終了まち
-	RC.WaitUntilToPossibleSetRenderTarget(RT);
+	renderContext.WaitUntilToPossibleSetRenderTarget(RT);
 	//レンダリングターゲットを設定
-	RC.SetRenderTargetAndViewport(RT);
+	renderContext.SetRenderTargetAndViewport(RT);
 	//最終合成
-	finalSprite.Draw(RC);
+	finalSprite.Draw(renderContext);
 	//レンダリングターゲットへの書き込み終了待ち
-	RC.WaitUntilFinishDrawingToRenderTarget(RT);
+	renderContext.WaitUntilFinishDrawingToRenderTarget(RT);
 }

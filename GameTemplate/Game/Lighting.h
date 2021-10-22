@@ -37,6 +37,11 @@ public:
 	{
 		eyePos = g_camera3D->GetPosition();
 	}
+
+	Vector3 GetDirection()
+	{
+		return ligDirection;
+	}
 };
 
 struct PointLight

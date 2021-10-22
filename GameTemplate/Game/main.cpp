@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "system/system.h"
 #include "KTypeBloom.h"
+#include "DepthShadow.h"
 
 
 
@@ -20,17 +21,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	GameObjectManager::CreateInstance();
 	PhysicsWorld::CreateInstance();
 
-	//g_camera3D->SetPosition(0.0f, 300.0f, 20.0f);
-
-	//DirectionLight dirLig;
-	//dirLig.SetDirection({ 1.0f, -1.0f, -1.0f });
-	////正規化する
-	//dirLig.ligDirection.Normalize();
-
-	//dirLig.SetColor({ 1.0f,1.0f,1.0f });
-
-	//dirLig.eyePos = g_camera3D->GetPosition();
-
 	RenderTarget mainRenderTarget;
 	mainRenderTarget.Create(
 		1280,
@@ -45,9 +35,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	DirectionLight DLig;
 	
-	Vector3 DLigDir = { 0.0f, -1.0f, -0.5f };
+	Vector3 DLigDir = { 0.0f, -1.0f, 2.0f };
 
-	DLig.SetColor({ 1.6f, 1.6f, 1.6f });
+	DLig.SetColor({1.0f, 1.0f, 1.0f });
 	DLig.SetDirection(DLigDir);
 	
 	PointLight PLig;
@@ -65,7 +55,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 
 	AmbientLight ALig;
-	ALig.SetAmbientLight(0.15f);
+	ALig.SetAmbientLight(0.3f);
 
 	
 
@@ -78,7 +68,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	Lig.ptRange = 100.0f;*/
 
-	Vector3 SunPosition = DLigDir;
+	/*Vector3 SunPosition = DLigDir;
 	SunPosition.Normalize();
 	SunPosition.Scale(6000.0f);
 
@@ -88,38 +78,31 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	SunPerspective.SetFar(10000.0f);
 	SunPerspective.SetTarget({ 0.0f,0.0f,0.0f });
 	SunPerspective.SetUp({ 0.0f,1.0f,0.0f });
-	SunPerspective.SetWidth(1024);
-	SunPerspective.SetHeight(1024);
-	SunPerspective.Update();
+	SunPerspective.SetWidth(4096);
+	SunPerspective.SetHeight(4096);
+	SunPerspective.Update();*/
 
-	//g_camera3D = &SunPerspective;
-	//Camera MAUEView;	//真上視点
-	//MAUEView.SetPosition(0.0f, 2000.0, 0.01f);
-	//MAUEView.SetTarget(0.0f, 0.0f, 0.0f);
-	//MAUEView.SetFar(10000.0f);
-	//MAUEView.Update();
-
-	//g_camera3D = &MAUEView;
-
+	
 	Light Lig;
 	Lig.DLight = DLig;
 	Lig.PLight = PLig;
 	Lig.SLight = SLig;
 	Lig.ALight = ALig;
-	Lig.LV.SetPrjMatrix(SunPerspective.GetViewProjectionMatrix());
+	/*Lig.LV.SetPrjMatrix(SunPerspective.GetViewProjectionMatrix());*/
+	DepthShadow DShadow;
+	DShadow.Init(Lig);
 
-
-	RenderTarget shadowMapRT; //シャドウマップレンダーターゲット
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	shadowMapRT.Create(
-		2048,
-		2048,
-		1,
-		1,
-		DXGI_FORMAT_R32G32B32A32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT,
-		clearColor
-	);
+	//RenderTarget shadowMapRT; //シャドウマップレンダーターゲット
+	//float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//shadowMapRT.Create(
+	//	4096,
+	//	4096,
+	//	1,
+	//	1,
+	//	DXGI_FORMAT_R32G32B32A32_FLOAT,
+	//	DXGI_FORMAT_D32_FLOAT,
+	//	clearColor
+	//);
 
 	Model Uni;
 	Model UniSha;
@@ -138,101 +121,23 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	uniSha.m_fxFilePath = "Assets/shader/SampleDepthShadow.fx";
 	uniSha.m_psEntryPointFunc = "PSMain";
 
-	//uniSha.m_expandConstantBuffer = &Lig;
-	//uniSha.m_expandConstantBufferSize = sizeof(Lig);
+	uniSha.m_expandConstantBuffer = &Lig;
+	uniSha.m_expandConstantBufferSize = sizeof(Lig);
 
 	uniSha.m_collorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
 
 	ModelInitData BG;
 	BG.m_tkmFilePath = "Assets/modelData/bg/bg.tkm";
 	BG.m_fxFilePath = "Assets/shader/model.fx";
-	BG.m_expandShaderResoruceView = &shadowMapRT.GetRenderTargetTexture();
+	BG.m_expandShaderResoruceView = &DShadow.GetShadowMap().GetRenderTargetTexture();
 
 	BG.m_expandConstantBuffer = &Lig;
 	BG.m_expandConstantBufferSize = sizeof(Lig);
 	BG.m_collorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
 	Uni.Init(uni);
-	UniSha.Init(uniSha);
 	BackGround.Init(BG);
-	/*
-	//輝度抽出用レンダリングターゲットを作成
-	RenderTarget luminanceRenderTarget;
-
-	//解像度、ミニマップレベル
-	luminanceRenderTarget.Create(
-		1280,
-		720,
-		1,
-		1,
-		DXGI_FORMAT_R32G32B32A32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT
-	);
-
-	//輝度抽出用のスプライトを初期化
-	//初期化情報を作成する
-	SpriteInitData luminanceSpriteInitData;
-
-	//輝度抽出用のシェーダーのファイルパスを指定する
-	luminanceSpriteInitData.m_fxFilePath = "Assets/shader/posteffects.fx";
-
-	//頂点シェーダーのエントリーポイントを指定
-	luminanceSpriteInitData.m_vsEntryPointFunc = "VSMain";
-	
-	//ピクセルシェーダーのエントリーポイントを指定する
-	luminanceSpriteInitData.m_psEntryPointFunc = "PSSamplingLuminance";
-
-	//スプライトの幅と高さはluminannceRenderTargetと同じ
-	luminanceSpriteInitData.m_width = 1280;
-	luminanceSpriteInitData.m_height = 720;
-
-	// テクスチャはメインレンダリングターゲットのカラーバッファー
-	luminanceSpriteInitData.m_textures[0] = &mainRenderTarget.GetRenderTargetTexture();
-
-	//描き込むレンダリングターゲットのフォーマットを指定する
-	luminanceSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	//作成した初期化情報をもとにスプライトを初期化する
-	Sprite luminanceSprite;
-	luminanceSprite.Init(luminanceSpriteInitData);
-
-	//ガウシアンブラーを初期化
-	GaussianBlur toBloomGaussianBlur[4];
-	//gaussianBlur[0]は輝度テクスチャにガウシアンブラーをかける。
-	toBloomGaussianBlur[0].Init(&luminanceRenderTarget.GetRenderTargetTexture());
-	//gaussianBlur[1]はgaussianBlur[0]テクスチャにガウシアンブラーをかける
-	toBloomGaussianBlur[1].Init(&toBloomGaussianBlur[0].GetBlurredTexture());
-	toBloomGaussianBlur[2].Init(&toBloomGaussianBlur[1].GetBlurredTexture());
-	toBloomGaussianBlur[3].Init(&toBloomGaussianBlur[2].GetBlurredTexture());
-
-	//ボケ画像を合成して描き込むためのスプライトを初期化
-	//初期化情報を設定す
-	SpriteInitData finalSpriteInitData;
-	finalSpriteInitData.m_textures[0] = &toBloomGaussianBlur[0].GetBlurredTexture();
-	finalSpriteInitData.m_textures[1] = &toBloomGaussianBlur[1].GetBlurredTexture();
-	finalSpriteInitData.m_textures[2] = &toBloomGaussianBlur[2].GetBlurredTexture();
-	finalSpriteInitData.m_textures[3] = &toBloomGaussianBlur[3].GetBlurredTexture();
-
-	//解像度はmainRenderTargetの幅と高さ
-	finalSpriteInitData.m_width = 1280;
-	finalSpriteInitData.m_height = 720;
-	//ボケ画像を合成する必要があるので専用シェーダーを指定。
-	finalSpriteInitData.m_fxFilePath = "Assets/shader/posteffects.fx";
-	finalSpriteInitData.m_psEntryPointFunc = "PSBloomFinal";
-
-	//ただし加算合成で描画するので、アルファブレンディングモードに加算にする
-	finalSpriteInitData.m_alphaBlendMode = AlphaBlendMode_Add;
-	//カラーバッファのフォーマットは32bitFloatingPointバッファ
-	finalSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	//初期化情報を元に加算合成用のスプライトを初期化する。
-	Sprite finalSprite;
-	finalSprite.Init(finalSpriteInitData);
-	*/
-	//mainRenderTargetのテクスチャをフレームバッファーに貼り付けるためのスプライトを初期化する
-	//スプライトの初期化オブジェクトを作成する。
-	
-
+	UniSha.Init(uniSha);
 
 
 	SpriteInitData spriteInitData;
@@ -251,8 +156,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	KTypeBloom kBloom;
 	kBloom.Init(mainRenderTarget);
 
-	Vector3 SligPos = SLig.GetSLigPos();
-
+	Quaternion DireLigRollerX;
+	Quaternion DireLigRollerY;
 
 	//////////////////////////////////////
 	// 初期化を行うコードを書くのはここまで！！！
@@ -279,7 +184,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		else {			
 			SLig.SetSLigPos({ SLig.GetSLigPos().x, SLig.GetSLigPos().y + g_pad[0]->GetLStickYF(),SLig.GetSLigPos().z });
 		}
+		
+		DireLigRollerX.SetRotationDeg(Vector3::AxisX, g_pad[0]->GetRStickYF());
+		DireLigRollerY.SetRotationDeg(Vector3::AxisY, g_pad[0]->GetRStickXF());
+		DireLigRollerX.Multiply(DireLigRollerY);
 
+		DireLigRollerX.Apply(DLigDir);
+		DLig.SetDirection(DLigDir);
 
 		//DirRota.SetRotation(Vector3::AxisX, DirAng);
 		//DirRota.Apply(DLigDir);
@@ -292,13 +203,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		Lig.DLight = DLig;
 		Lig.PLight = PLig;
 		Lig.SLight = SLig;
+		DShadow.Update(Lig);
 
-		renderContext.WaitUntilToPossibleSetRenderTarget(shadowMapRT);
-		renderContext.SetRenderTargetAndViewport(shadowMapRT);
-		renderContext.ClearRenderTargetView(shadowMapRT);
-		UniSha.Draw(renderContext, SunPerspective);
-		renderContext.WaitUntilFinishDrawingToRenderTarget(shadowMapRT);
+		renderContext.WaitUntilToPossibleSetRenderTarget(DShadow.GetShadowMap());
+		renderContext.SetRenderTargetAndViewport(DShadow.GetShadowMap());
+		renderContext.ClearRenderTargetView(DShadow.GetShadowMap());
 
+		UniSha.Draw(renderContext, DShadow.GetCamera());
+
+		renderContext.WaitUntilFinishDrawingToRenderTarget(DShadow.GetShadowMap());
+		/*DShadow.DrawShadow(uniSha, renderContext);*/
 
 		//レンダリングターゲットをmainRenderTargetに変更する
 		//レンダリングターゲットとして利用できるまで待つ
@@ -315,53 +229,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 
 		//モデル描画
-		
 
-		/*
-		//輝度抽出
-		//輝度抽出用のレンダリングターゲットに変更
-		renderContext.WaitUntilToPossibleSetRenderTarget(luminanceRenderTarget);
-		//レンダリングターゲットに設定
-		renderContext.SetRenderTargetAndViewport(luminanceRenderTarget);
-		//レンダリングターゲットをクリア
-		renderContext.ClearRenderTargetView(luminanceRenderTarget);
-		//輝度抽出を行う
-		luminanceSprite.Draw(renderContext);
-		//レンダリングターゲットへの書き込み終了待ち
-		renderContext.WaitUntilFinishDrawingToRenderTarget(luminanceRenderTarget);
-		//ガウシアンブラーを4回実行する
-		toBloomGaussianBlur[0].ExecuteOnGPU(renderContext, 10);
-		toBloomGaussianBlur[1].ExecuteOnGPU(renderContext, 10);
-		toBloomGaussianBlur[2].ExecuteOnGPU(renderContext, 10);
-		toBloomGaussianBlur[3].ExecuteOnGPU(renderContext, 10);
-
-		//ボケ画像を合成してレンダリングターゲットに加算合成
-		//レンダリングターゲットとして利用できるまで待つ
-		renderContext.WaitUntilToPossibleSetRenderTarget(mainRenderTarget);
-		//レンダリングターゲットを設定
-		renderContext.SetRenderTargetAndViewport(mainRenderTarget);
-		//最終合成
-		finalSprite.Draw(renderContext);
-		*/
-		//レンダリングターゲットへの書き込み終了待ち
-		//renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
-		
-
-		kBloom.Updete(mainRenderTarget, renderContext);
+		kBloom.Updete(mainRenderTarget);
 
 		renderContext.SetRenderTarget(
 			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
 			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
 		);
-
-		
-
 		
 		copyToFrameBufferSprite.Draw(renderContext);
 		
 
-		//GameObjectManager::GetInstance()->ExecuteUpdate();
-		//GameObjectManager::GetInstance()->ExecuteRender(renderContext);
+		GameObjectManager::GetInstance()->ExecuteUpdate();
+		GameObjectManager::GetInstance()->ExecuteRender(renderContext);
 		
 		
 		//////////////////////////////////////

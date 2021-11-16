@@ -49,7 +49,7 @@ public:
 	/// tkmファイルから初期化。
 	/// </summary>
 	/// <param name="initData">初期化データ</param>
-	void Init( const ModelInitData& initData );
+	void Init(const ModelInitData& initData );
 	/// <summary>
 	/// ワールド行列の更新。
 	/// </summary>

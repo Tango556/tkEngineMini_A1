@@ -13,7 +13,7 @@ private:
 	Vector3 DirColor = Vector3::Zero;
 	float pad1 = 0.0f;
 	Vector3 eyePos = Vector3::Zero;
-	float pad2 = 0.0f;
+	int Nomber;
 public:
 	/// <summary>
 	/// ディレクションセッター
@@ -41,6 +41,10 @@ public:
 	Vector3 GetDirection()
 	{
 		return ligDirection;
+	}
+	Vector3 GetColor()
+	{
+		return DirColor;
 	}
 };
 
@@ -191,10 +195,49 @@ struct Light
 class Lighting
 {
 private:
-	DirectionLight DLig[10];
-	PointLight PLig[50];
-	SpotLight SLig[50];
-	AmbientLight Alig;
+	DirectionLight* DLig[8];
+	int DLigNum = 0;
+	const int MaxDLig = 8;
+	Vector2 pad0;
+	PointLight* PLig[64];
+	int PLigNum = 0;
+	const int MaxPLig = 64;
+	Vector2 pad1;
+	SpotLight* SLig[64];
+	int SLigNum = 0;
+	const int MaxSLig = 64;
+	Vector2 pad2;
+	AmbientLight* ALig;
+	LightView* LV;
 public:
-	
+	Lighting();
+	~Lighting();
+
+	bool Start();
+	void Update();
+
+	/// <summary>
+	/// ディレクションライトを追加する関数
+	/// </summary>
+	/// <param name="DL">追加したいディレクションライト</param>
+	void AddLig(DirectionLight DL);
+	/// <summary>
+	/// ポイントライトを追加する関数
+	/// </summary>
+	/// <param name="PL">追加したいポイントライト</param>
+	void AddLig(PointLight PL);
+	/// <summary>
+	/// スポットライトを追加する関数
+	/// </summary>
+	/// <param name="SL">追加したいスポットライト</param>
+	void AddLig(SpotLight SL);
+	enum REM_LIG{enD,enP,enS};
+	void RemLig(REM_LIG rL, int lignum);
+	void LigClear(bool DL, bool PL, bool SL);
+	void SetAlig(AmbientLight AL);
+
+	Lighting GetLigAd()
+	{
+		return *this;
+	}
 };

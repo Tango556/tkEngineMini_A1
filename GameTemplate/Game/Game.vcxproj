@@ -290,10 +290,17 @@
     <ClCompile Include="..\..\MiniEngine\tkFile\TksFile.cpp" />
     <ClCompile Include="..\..\MiniEngine\VertexBuffer.cpp" />
     <ClCompile Include="DepthShadow.cpp" />
+    <ClCompile Include="GameDirector.cpp" />
     <ClCompile Include="GaussianBlur.cpp" />
     <ClCompile Include="KTypeBloom.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerControll.cpp" />
+    <ClCompile Include="PlayerEquipment.cpp" />
+    <ClCompile Include="PlayerVital.cpp" />
+    <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="SkinModelRender.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -303,6 +310,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Preview|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="system\system.cpp" />
+    <ClCompile Include="Weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ExEngine\ExEngine.h" />
@@ -366,11 +374,19 @@
     <ClInclude Include="..\..\MiniEngine\tkFile\TksFile.h" />
     <ClInclude Include="..\..\MiniEngine\VertexBuffer.h" />
     <ClInclude Include="DepthShadow.h" />
+    <ClInclude Include="GameDirector.h" />
     <ClInclude Include="GaussianBlur.h" />
     <ClInclude Include="KTypeBloom.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerControll.h" />
+    <ClInclude Include="PlayerEquipment.h" />
+    <ClInclude Include="PlayerVital.h" />
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="SkinModelRender.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
+    <ClInclude Include="Weapons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

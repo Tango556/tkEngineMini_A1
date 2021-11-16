@@ -137,6 +137,20 @@ SPSIn VSMain(SVSIn vsIn)
     
     return psIn;
 }
+
+SPSIn SHVSMain(SVSIn vsIn)
+{
+    SPSIn psIn;
+    
+    psIn.pos = mul(mWorld, vsIn.pos);
+    psIn.pos = mul(mView, psIn.pos);
+    psIn.pos = mul(mProj, psIn.pos);
+
+    psIn.uv = vsIn.uv;
+    psIn.normal = mul(mWorld, vsIn.normal);
+    
+    return psIn;
+}
 /// <summary>
 /// スキンありメッシュの頂点シェーダーのエントリー関数。
 /// </summary>
@@ -268,7 +282,13 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
         float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV).r;
         if (zInLVP > zInShadowMap)
         {
-            finalColor.xyz *= 0.5f;
+            float Shadow = dot(ligDirection, float3(0.0f, -1.0f, 0.0f));
+            if (Shadow < 0.0f)
+            {
+                Shadow = 0.0f;
+            }
+            
+            finalColor.xyz *= 1.0f - (Shadow * 0.5f);
         }
     }
 	
@@ -280,6 +300,16 @@ float4 EZModelSH(SPSIn psIn) : SV_Target1
     float4 color = g_albedo.Sample(g_sampler, psIn.uv);
     
     return color;
+}
+
+float4 DepthPSMain(SPSIn psIn) : SV_Target2
+{
+    float ShadowAlpha = dot(ligDirection, float3(0.0f, 1.0f, 0.0f));
+    if (ShadowAlpha < 0.0f)
+    {
+        ShadowAlpha = 0.0f;
+    }
+    return float4(psIn.pos.z, psIn.pos.z, psIn.pos.z, 1.0f);
 }
 
 float3 CalcLambertDiffuse(float3 lightDirection, float3 lightColor, float3 normal)

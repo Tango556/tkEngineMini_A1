@@ -5,7 +5,9 @@ class DepthShadow
 {
 public:
 	void Init(Light& lig);
+	void Init(Lighting& lig);
 	void Update(Light& lig);
+	void Update(Lighting& lig);
 	void DrawShadow(ModelInitData& SHModelData, RenderContext& RC);
 	void SetLigCameraPos(Vector3 LigCamPos)
 	{
@@ -21,7 +23,7 @@ public:
 	}
 	Texture& GetBluredSHD()
 	{
-		return GBlur[1].GetBlurredTexture();
+		return GBlur.GetBlurredTexture();
 	}
 	//void DrawShadow(Model SHModel[]);
 private:
@@ -30,6 +32,6 @@ private:
 	/// @brief ÉâÉCÉgÉJÉÅÉâ
 	Camera SunparspectiveCam;
 	//ModelInitData ShadowModelData;
-	GaussianBlur GBlur[2];
+	GaussianBlur GBlur;
 };
 

@@ -10,6 +10,10 @@ public:
 	{
 		return m_moveVelocity;
 	}
+	float GetSprintMul()
+	{
+		return m_sprintMoveMul/*+ parkBuff*/;
+	}
 
 private:
 	float m_playerLife = 100.0f;
@@ -18,5 +22,6 @@ private:
 	const float m_maxPlayerLife = 100.0f;
 	float m_playerStamina = 100.0f;
 	const float m_maxPlayerStamina = 100.0f;
-	float m_moveVelocity = 5.0f;
+	float m_moveVelocity = 7.0f;
+	const float m_sprintMoveMul = 2.0f;
 };

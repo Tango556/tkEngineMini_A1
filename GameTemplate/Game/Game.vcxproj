@@ -289,13 +289,16 @@
     <ClCompile Include="..\..\MiniEngine\tkFile\TkmFile.cpp" />
     <ClCompile Include="..\..\MiniEngine\tkFile\TksFile.cpp" />
     <ClCompile Include="..\..\MiniEngine\VertexBuffer.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="DepthShadow.cpp" />
     <ClCompile Include="GameDirector.cpp" />
     <ClCompile Include="GaussianBlur.cpp" />
     <ClCompile Include="KTypeBloom.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModelLib.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="PlayerControll.cpp" />
     <ClCompile Include="PlayerEquipment.cpp" />
     <ClCompile Include="PlayerVital.cpp" />
@@ -310,6 +313,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Preview|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="system\system.cpp" />
+    <ClCompile Include="Test.cpp" />
+    <ClCompile Include="ThrowingWeapon.cpp" />
     <ClCompile Include="Weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -373,12 +378,15 @@
     <ClInclude Include="..\..\MiniEngine\tkFile\TkmFile.h" />
     <ClInclude Include="..\..\MiniEngine\tkFile\TksFile.h" />
     <ClInclude Include="..\..\MiniEngine\VertexBuffer.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="DepthShadow.h" />
     <ClInclude Include="GameDirector.h" />
     <ClInclude Include="GaussianBlur.h" />
     <ClInclude Include="KTypeBloom.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="ModelLib.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerControll.h" />
     <ClInclude Include="PlayerEquipment.h" />
     <ClInclude Include="PlayerVital.h" />
@@ -386,6 +394,8 @@
     <ClInclude Include="SkinModelRender.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
+    <ClInclude Include="Test.h" />
+    <ClInclude Include="ThrowingWeapon.h" />
     <ClInclude Include="Weapons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

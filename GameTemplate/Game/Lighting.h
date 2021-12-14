@@ -190,9 +190,14 @@ struct Light
 	SpotLight SLight;
 	AmbientLight ALight;
 	LightView LV;
+
+	Light* GetLight()
+	{
+		return this;
+	}
 };
 
-class Lighting
+class Lighting : public IGameObject
 {
 private:
 	DirectionLight* DLig[8];

@@ -288,7 +288,7 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
                 Shadow = 0.0f;
             }
             
-            finalColor.xyz *= 1.0f - (Shadow * 0.5f);
+            finalColor.xyz *= 1.0f - (Shadow * 0.7f);
         }
     }
 	

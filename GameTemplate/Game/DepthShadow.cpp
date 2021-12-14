@@ -26,8 +26,8 @@ void DepthShadow::Init(Light& lig)
 	SunparspectiveCam.SetPosition(SunPosition * -1.0f);
 	SunparspectiveCam.SetFar(10000.0f);
 	SunparspectiveCam.SetUp({ 0.0f,1.0f,0.0f });
-	SunparspectiveCam.SetHeight(2048);
-	SunparspectiveCam.SetWidth(2048);
+	SunparspectiveCam.SetHeight(2248);
+	SunparspectiveCam.SetWidth(2248);
 	SunparspectiveCam.Update();
 	GBlur.Init(&ShadowMap.GetRenderTargetTexture());
 }

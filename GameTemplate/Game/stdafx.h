@@ -4,5 +4,6 @@
 #include "MiniEngine.h"
 #include "ExEngine.h"
 #include "Lighting.h"
+#include "DepthShadow.h"
 
 const char LIGHT_NAME[] = { "GameRight" };
